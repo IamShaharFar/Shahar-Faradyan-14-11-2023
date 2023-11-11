@@ -1,0 +1,11 @@
+*{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --color-primary: #7f6ea8; /* A soft purple, representing the main theme */
+  --color-secondary: #a89fcd; /* A lighter purple for secondary elements */
+  --color-accent: #ffd700; /* A sun-like yellow for accent pieces */
+  --color-background: #f2f2f2; /* A very light grey, almost white, for the background */
+  --color-text: #333333; /* A darker color for text for readability */
+}

@@ -1,0 +1,40 @@
+ 
+.favorites-container {
+  background-color: var(--color-background);
+  padding: 20px;
+  display: flex; /* Add this to layout cards in a row */
+  flex-wrap: wrap; /* Add this to allow wrapping when the row is full */
+  gap: 10px; /* Add this to create some space between the cards */
+  justify-content: center; /* Add this to center the cards within the container */
+}
+
+.favorite-card {
+  background-color: var(--color-primary); /* This will use your primary color variable */
+  color: var(--color-text);
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  position: relative;
+  width: 200px; /* Set your width */
+  height: 250px; /* Set your height */
+  display: flex; /* Add this to use flexbox layout inside the card */
+  flex-direction: column; /* Stack children vertically */
+  justify-content: space-between; /* Distribute space around items */
+}
+  
+  .card-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .favorite-star {
+    color: var(--color-accent);
+    cursor: pointer;
+    position: absolute; /* This keeps the star positioned relative to the card */
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+}
+  

@@ -1,0 +1,40 @@
+.form-inline {
+  position: relative;
+}
+
+.dropdown-menu.show{
+  width: 200px !important;
+  top: 100%; 
+  border-top: 0; 
+}
+
+.hide{
+  display: none;
+}
+
+.bg-orange {
+  background-color: #e59400 !important; 
+}
+
+.bg-dark-blue{
+  background-color: #0f1c3c !important;;
+}
+
+.white-text{
+  color: white !important;
+}
+
+.bg-purple{
+  background-color: #963ee9;
+}
+
+.text-purple{
+  color: var(--color-text) !important;
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(150, 62, 233, .25); 
+}
+
