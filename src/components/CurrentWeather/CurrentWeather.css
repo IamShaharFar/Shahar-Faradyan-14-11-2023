@@ -1,0 +1,93 @@
+/* WeatherComponent.css */
+.location-date {
+    position: relative;
+}
+
+.weather-container{
+    width: 70vw;
+}
+
+.current-weather-container{
+    width: 100% !important;
+}
+
+.fa-bookmark{
+    color: #ffc107;
+    cursor: pointer;
+}
+
+.temperature-circle {
+    width: 120px;
+    height: 120px;
+    border: 2px solid grey;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day-details{
+    background-color: var(--color-card-bg);
+}
+
+.hourly-forecast {
+    width: 100%;
+    background-color: var(--color-card-bg);
+}
+
+.daily-forecast-item {
+    width: 100%;
+}
+
+.daily-forecast-item .card-body .card-title {
+    width: 100%;
+}
+
+.daily-forecast-item {
+    border-bottom: 1px solid gray !important;
+    background-color: #ffffff;
+    box-shadow: none;
+}
+
+.card {
+    border: none;
+    border-radius: 0;
+}
+
+.daily-forecast-item:first-child {
+    border-top: none;
+}
+
+.next-days-forecast{
+    background-color: var(--color-card-bg);
+}
+
+.transparent-card {
+    background-color: transparent;
+    border: none;
+}
+
+
+.next-days-forecast .row:last-child .card {
+    border-bottom: 0px !important;
+}
+
+@media (max-width: 767px) {
+
+    .weather-container {
+        width: 100vw;
+    }
+
+    .current-temp {
+        border-bottom: 1px solid #ccc;
+    }
+}
+
+@media (min-width: 768px) {
+
+    /* Adjust the breakpoint as needed */
+    .current-temp {
+        border-right: 1px solid #ccc;
+        /* Adjust color as needed */
+    }
+}

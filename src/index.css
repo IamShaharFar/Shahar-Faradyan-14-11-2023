@@ -3,9 +3,28 @@
 }
 
 :root {
-  --color-primary: #7f6ea8; /* A soft purple, representing the main theme */
-  --color-secondary: #a89fcd; /* A lighter purple for secondary elements */
-  --color-accent: #ffd700; /* A sun-like yellow for accent pieces */
-  --color-background: #f2f2f2; /* A very light grey, almost white, for the background */
-  --color-text: #333333; /* A darker color for text for readability */
+  /* Light Theme */
+  --color-primary: #7f6ea8;
+  --color-secondary: #a89fcd;
+  --color-accent: #ffd700;
+  --color-background: #f2f2f2;
+  --color-text: #333333;
+  --color-bg: #dcdcdc;
+  --color-card-bg: #d2d4d7;
+  --color-text-main: #222b3a;
+  --color-text-secondary: #a4a7ae;
 }
+
+[data-theme="dark"] {
+  /* Dark Theme */
+  --color-primary: #564f8a; 
+  --color-secondary: #807da3; 
+  --color-accent: #ffc107; 
+  --color-background: #403761; 
+  --color-text: #f2f2f2; 
+  --color-bg: #0d131d;
+  --color-card-bg: #222b3a;
+  --color-text-main: #d5d7da;
+  --color-text-secondary: #8c919a;
+}
+

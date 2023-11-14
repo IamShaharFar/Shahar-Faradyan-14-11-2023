@@ -3,9 +3,15 @@ import { combineReducers } from 'redux';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; 
 import favoritesReducer from './redux/favoritesSlice';
+import currentWeatherReducer  from './redux/currentWeatherSlice ';
+import fiveDayForecastReducer from './redux/fiveDayForecastSlice ';
+import currentFavorReducer from './redux/currentFavorWeather';
 
 const rootReducer = combineReducers({
   favorites: favoritesReducer,
+  currentWeather: currentWeatherReducer,
+  fiveDayForecast: fiveDayForecastReducer,
+  currentFavorWeather: currentFavorReducer,
 });
 
 const persistConfig = {

@@ -1,132 +1,143 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  setCurrentWeather,
+  resetWeather,
+} from "../../redux/currentWeatherSlice ";
 import { addFavorite, removeFavorite } from "../../redux/favoritesSlice";
+import { useTemperature } from "../../TemperatureContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Banner.css";
 
-const apiKey = "S0sGyx9oJ2C7RaYx17ns7qqai1QTSZYt";
-
-const Banner = ({ selectedLocation }) => {
+const Banner = () => {
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites);
+  const weatherData = useSelector((state) => state.currentWeather);
   const [weather, setWeather] = useState(null);
-  const cityName = getFormattedCityName(weather);
-  const cityKey = getLocationKey(weather?.[0]?.MobileLink);
+  const { unit } = useTemperature();
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
+  const showErrorPopup = (message) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+  };
+
+  const cityName = getCityNameFromWeatherData(weather);
+  const cityKey = getCityKeyFromWeatherData(weather);
   const isFavorite = favorites.some((fav) => fav.key === cityKey);
 
-  useEffect(() => {
-    getWeatherData(selectedLocation);
-  }, [selectedLocation]);
-
-  const getWeatherData = async (locationKey) => {
+  function getCityNameFromWeatherData() {
     try {
-      const weatherResponse = await fetch(
-        `https://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${apiKey}`
-      );
-      const weatherData = await weatherResponse.json();
-      setWeather(weatherData);
-      localStorage.setItem(
-        "currentWeather",
-        JSON.stringify({
-          data: weatherData,
-          timestamp: new Date().getTime(),
-          key: locationKey,
-        })
-      );
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
+      if (!weatherData || !weatherData.data || !weatherData.data.MobileLink)
+        return "";
+      const url = weatherData.data.MobileLink;
+      return url
+        .split("/")[5]
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+    } catch (err) {
+      showErrorPopup("Error processing weather data.");
     }
-  };
+  }
 
-  const fetchLocationKeyAndWeather = async (latitude, longitude) => {
+  function getCityKeyFromWeatherData() {
+    return weatherData && weatherData.key ? weatherData.key : null;
+  }
+
+  function toggleFavorite() {
     try {
-      const locationResponse = await fetch(
-        `https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${latitude},${longitude}`
-      );
-      const locationData = await locationResponse.json();
-      await getWeatherData(locationData.Key);
-    } catch (error) {
-      console.error("Error fetching location key:", error);
-      throw error;
-    }
-  };
-
-  function getFormattedCityName(weatherData) {
-    if (!weatherData || !weatherData.length || !weatherData[0].MobileLink) {
-      return "";
-    }
-
-    const url = weatherData[0].MobileLink;
-    const citySlug = url.split("/")[5];
-    const formattedCityName = citySlug
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
-    return formattedCityName;
-  }
-
-  function getLocationKey(url) {
-    if (!url) return null;
-    // Split the URL by '?' to separate the path from the query string
-    const path = url.split("?")[0];
-    // Split the path into segments
-    const segments = path.split("/");
-    // The key is the last segment of the path
-    const key = segments[segments.length - 1];
-    return key;
-  }
-
-  function handleFavoriteClick() {
-    const favoriteData = { key: cityKey, name: cityName };
-    console.log("Adding to favorites:", favoriteData);
-    if (isFavorite) {
-      dispatch(removeFavorite(cityKey));
-    } else {
-      dispatch(addFavorite(favoriteData));
+      const favoriteData = { key: cityKey, name: cityName };
+      if (isFavorite) {
+        dispatch(removeFavorite(cityKey));
+      } else {
+        dispatch(addFavorite(favoriteData));
+      }
+    } catch (err) {
+      showErrorPopup("Unable to update favorites.");
     }
   }
 
-  if (!weather) {
-    return <div className="banner"></div>; // or any other loading state representation
+  function displayTemperature(tempCelsius) {
+    return unit === "Celsius"
+      ? `${tempCelsius}°C`
+      : `${convertToFahrenheit(tempCelsius).toFixed(1)}°F`;
+  }
+
+  function convertToFahrenheit(celsius) {
+    return (celsius * 9) / 5 + 32;
   }
 
   return (
-    <div className="banner">
-      <div className="current-temp-card-container">
-        <div className="current-temp-card">
-          {isFavorite ? (
-            <i
-              className="fa-solid fa-star favorite-star"
-              onClick={handleFavoriteClick}
-            ></i>
-          ) : (
-            <i
-              className="far fa-star favorite-star"
-              onClick={handleFavoriteClick}
-            ></i>
-          )}
-          <div className="current-temp-card-content">
-            <img
-              src={`https://developer.accuweather.com/sites/default/files/${
-                weather[0].WeatherIcon >= 10
-                  ? weather[0].WeatherIcon
-                  : "0" + weather[0].WeatherIcon
-              }-s.png`}
-              className="current-icon"
-              alt="Weather Icon"
-            />
-            <h3 className="card-title mb-2">{cityName}</h3>
-            <p className="card-text">
-              <strong>
-                {weather[0].Temperature.Metric.Value}°
-                {weather[0].Temperature.Metric.Unit}
-              </strong>{" "}
-              {weather[0].WeatherText}
-            </p>
+    <div>
+      {showPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "red",
+            color: "white",
+            padding: "20px",
+            borderRadius: "10px",
+            zIndex: 1000,
+          }}
+        >
+          {popupMessage}
+        </div>
+      )}
+      {!weatherData || !weatherData.key ? (
+        <div className="banner d-flex justify-content-start align-items-center w-100">
+          <div className="current-temp-card-container d-flex flex-column align-items-center justify-content-center position-absolute m-0 rounded-4">
+            <div
+              className="spinner-border"
+              role="status"
+              style={{ color: "#564f8a" }}
+            ></div>
+            <span className="d-block text-center mt-2">Loading...</span>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="banner d-flex justify-content-start align-items-center w-100">
+          <div className="current-temp-card-container position-absolute m-0 rounded-4">
+            <div className="current-temp-card text-center d-flex flex-column align-items-center justify-content-center w-100 h-100">
+              <i
+                className={`fa-star favorite-star position-absolute ${
+                  isFavorite ? "fa-solid" : "far"
+                }`}
+                onClick={toggleFavorite}
+              ></i>
+              <div className="current-temp-card-content position-absolute d-flex flex-column align-items-center justify-content-center h-100 w-100">
+                {weatherData &&
+                weatherData.key &&
+                weatherData.data.WeatherIcon !== undefined ? (
+                  <img
+                    src={`https://developer.accuweather.com/sites/default/files/${
+                      weatherData.data.WeatherIcon >= 10
+                        ? weatherData.data.WeatherIcon
+                        : "0" + weatherData.data.WeatherIcon
+                    }-s.png`}
+                    className="current-icon"
+                    alt="Weather Icon"
+                  />
+                ) : (
+                  <div>Loading weather icon...</div>
+                )}
+
+                <h3 className="mb-2">{cityName}</h3>
+                <p>
+                  <strong>
+                    {displayTemperature(weatherData.data.Temperature.Metric.Value)}
+                  </strong>{" "}
+                  {weatherData.data.WeatherText}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,40 +1,113 @@
+.navbar-component {
+  background-color: var(--color-card-bg);
+  position: relative;
+}
+
+.nav-tog{
+position: absolute;
+top: 0.3rem;
+right: 0.3rem;
+}
+
+.togglers{
+  display: flex !important;
+  flex-direction: row;
+}
+
+.no-underline,
+.no-underline:hover,
+.no-underline:focus,
+.no-underline:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+.text {
+  color: var(--color-text-main) !important;
+}
+
+.bg {
+  background-color: var(--color-text-main) !important;
+}
+
+.dropdown-menu, .side-dropdown-menu {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.dropdown-menu .dropdown-item:last-child, .side-dropdown-menu .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu .dropdown-item:hover, .side-dropdown-menu .dropdown-item:hover {
+  background-color: var(--color-accent);
+  color: #564f8a;
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+
+.sidebar {
+  background-color: var(--color-card-bg);
+}
+
+.side-dropdown-menu .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.side-dropdown-menu .dropdown-item:hover {
+  background-color: var(--color-accent);
+  color: var(--color-primary); 
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.custom-close-button {
+  top: 10px;
+  right: 10px;
+  background: none;
+  font-size: 20px;
+  color: var(--color-text);
+}
+
+.custom-close-button:hover {
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+
 .form-inline {
   position: relative;
 }
 
-.dropdown-menu.show{
+.dropdown-menu.show {
   width: 200px !important;
-  top: 100%; 
-  border-top: 0; 
+  top: 100%;
+  border-top: 0;
 }
 
-.hide{
+.hide {
   display: none;
-}
-
-.bg-orange {
-  background-color: #e59400 !important; 
-}
-
-.bg-dark-blue{
-  background-color: #0f1c3c !important;;
-}
-
-.white-text{
-  color: white !important;
-}
-
-.bg-purple{
-  background-color: #963ee9;
-}
-
-.text-purple{
-  color: var(--color-text) !important;
 }
 
 .form-control:focus {
   border-color: var(--color-primary);
   outline: 0;
-  box-shadow: 0 0 0 .25rem rgba(150, 62, 233, .25); 
+  box-shadow: 0 0 0 .25rem rgba(150, 62, 233, .25);
 }
 
+@media (min-width: 1200px) {
+  .navbar-component .navbar-collapse {
+    display: flex !important;
+  }
+  .navbar-component .navbar-toggler {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .navbar-component .navbar-collapse {
+    display: none !important;
+  }
+  .navbar-component .navbar-toggler {
+    display: block !important;
+  }
+}

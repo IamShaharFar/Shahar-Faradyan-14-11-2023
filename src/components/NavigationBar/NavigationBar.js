@@ -1,85 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Nav, FormControl, Offcanvas, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useTheme } from "../../ThemeContext";
+import { useTemperature } from "../../TemperatureContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./NavigationBar.css";
+import ThemeToggle from "../Toggles/ThemeToggle";
+import UnitToggle from "../Toggles/UnitToggle";
 
 const NavigationBar = ({ handleLocationChange }) => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [sideShowDropdown, setSideShowDropdown] = useState(false);
   const [debounceTimeout, setDebounceTimeout] = useState(null);
   const [locationsResults, setLocationsResults] = useState([]);
+  const autocompleteUrl = process.env.REACT_APP_AUTOCOMPLETE_URL;
 
-  const handleCloseSidebar = () => setShowSidebar(false);
   const handleShowSidebar = () => setShowSidebar(true);
+  const handleCloseSidebar = () => setShowSidebar(false);
 
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
-    }
-
-    const newTimeout = setTimeout(() => {
-      handleSearch(e.target.value);
-    }, 800);
-
-    setDebounceTimeout(newTimeout);
+    const query = e.target.value;
+    handleDebouncedSearch(query);
   };
 
   const handleSideSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value;
+    handleDebouncedSearch(query);
+  };
 
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
+  const handleDebouncedSearch = (query) => {
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+
+    if (query.length === 0) {
+      setShowDropdown(false);
+      setSideShowDropdown(false);
+      return;
     }
 
-    const newTimeout = setTimeout(() => {
-      handleSearch(e.target.value);
-    }, 800);
-
-    setDebounceTimeout(newTimeout);
+    setDebounceTimeout(setTimeout(() => handleSearch(query), 800));
   };
 
   const handleSearch = (query) => {
     if (query === "") {
       setShowDropdown(false);
+      setSideShowDropdown(false);
       return;
     }
   
-    const weatherSearchData =
-      JSON.parse(localStorage.getItem("weathersearch")) || [];
-    // Sort by descending order of query string length
-    weatherSearchData.sort((a, b) => b.query.length - a.query.length);
+    let weatherSearchData = JSON.parse(localStorage.getItem("weathersearch")) || [];
+    weatherSearchData = weatherSearchData.sort((a, b) => b.query.localeCompare(a.query));
   
     const lowerCaseQuery = query.toLowerCase();
-    const match = weatherSearchData.find(
-      (search) =>
-        new Date().getTime() < search.expiration &&
-        (search.query.toLowerCase() === lowerCaseQuery ||
-          lowerCaseQuery.startsWith(search.query.toLowerCase()))
+  
+    const match = weatherSearchData.find(search => 
+      new Date().getTime() < search.expiration &&
+      search.query.toLowerCase().startsWith(lowerCaseQuery)
     );
   
     if (match) {
-      // Get results that match or start with the query
-      const newResults = match.results.filter((result) =>
+      const filteredResults = match.results.filter(result => 
         result.LocalizedName.toLowerCase().startsWith(lowerCaseQuery)
       );
-      // Update the local storage with new search only if there are new results
-      if (newResults.length > 0) {
-        storeNewSearch(query, newResults);
-        setLocationsResults(newResults);
-        // Show or hide dropdown based on results
-        setShowDropdown(newResults.length > 0);
-      } else {
-        // If no results are found in cache, fetch new data
-        fetchWeatherSearch(query);
-      }
+  
+      setLocationsResults(filteredResults);
+      setShowDropdown(filteredResults.length > 0);
+      setSideShowDropdown(filteredResults.length > 0);
     } else {
-      // If no match is found in cache, fetch new data
-      fetchWeatherSearch(query);
+      // Check if the exact query already exists
+      const exactMatch = weatherSearchData.some(search => 
+        search.query.toLowerCase() === lowerCaseQuery
+      );
+  
+      if (!exactMatch) {
+        fetchWeatherSearch(query);
+      } else {
+        setShowDropdown(false);
+        setSideShowDropdown(false);
+      }
     }
   };
   
@@ -88,7 +86,7 @@ const NavigationBar = ({ handleLocationChange }) => {
     const newSearch = {
       query: query,
       results: results,
-      expiration: new Date().getTime() + 24 * 60 * 60 * 1000, // Current time + 1 day in milliseconds
+      expiration: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day in milliseconds
     };
     const weatherSearchData =
       JSON.parse(localStorage.getItem("weathersearch")) || [];
@@ -97,42 +95,42 @@ const NavigationBar = ({ handleLocationChange }) => {
   };
 
   const fetchWeatherSearch = (query) => {
-    const apiKey = "S0sGyx9oJ2C7RaYx17ns7qqai1QTSZYt"; // Replace with your actual AccuWeather API key
-    const url = `https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${query}`;
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+    const url = `${autocompleteUrl}?apikey=${apiKey}&q=${query}`;
 
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         storeNewSearch(query, data);
         setLocationsResults(data);
+        setShowDropdown(data.length > 0);
+        setSideShowDropdown(data.length > 0);
       })
       .catch((error) => {
         console.error("Error fetching autocomplete data:", error);
       });
-      console.log("fetched");
   };
 
   return (
     <>
-      <Navbar bg="light" expand="lg" className="mt-0 pt-2">
-        <Link to="/" className="me-5 ms-3 text-purple">
-          <Navbar.Brand as="div">Weather Forecast</Navbar.Brand>
+      <Navbar expand="lg" className="mt-0 pt-2 navbar-component">
+        <Link to="/" className="me-5 ms-3 no-underline">
+          <Navbar.Brand as="div" className="text">
+            Weather Forecast
+          </Navbar.Brand>
         </Link>
 
         <Navbar.Toggle
           aria-controls="offcanvasNavbar"
           onClick={handleShowSidebar}
-          className="text-purple me-2"
+          className="bg me-2 nav-tog"
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link to="/" className="nav-link d-none d-lg-block text-purple">
+            <Link to="/" className="nav-link d-none d-lg-block text">
               Home
             </Link>
-            <Link
-              to="/favorites"
-              className="nav-link d-none d-lg-block text-purple"
-            >
+            <Link to="/favorites" className="nav-link d-none d-lg-block text">
               Favorites
             </Link>
             {/* Conditionally render the search bar for large screens */}
@@ -146,7 +144,7 @@ const NavigationBar = ({ handleLocationChange }) => {
                 onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
               />
               <div
-                className={`dropdown-menu ${showDropdown ? "show" : ""}`}
+                className={`dropdown-menu bg-white rounded-2 border overflow-hidden ${showDropdown ? "show" : ""}`}
                 style={{ width: "100%" }}
               >
                 {locationsResults.map((loc) => {
@@ -163,30 +161,38 @@ const NavigationBar = ({ handleLocationChange }) => {
                 })}
               </div>
             </Form>
+            <div className="togglers">
+              <ThemeToggle />
+              <UnitToggle />
+            </div>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
 
       <Navbar.Offcanvas
         id="offcanvasNavbar"
+        className="sidebar"
         aria-labelledby="offcanvasNavbarLabel"
         placement="start"
         show={showSidebar}
         onHide={handleCloseSidebar}
       >
-        <Offcanvas.Header closeButton>
-          <Link to="/">
-            <Offcanvas.Title className="text-purple" id="offcanvasNavbarLabel">
+        <Offcanvas.Header closeButton={false}>
+          <Link to="/" className="no-underline">
+            <Offcanvas.Title className="text" id="offcanvasNavbarLabel">
               Weather Forecast
             </Offcanvas.Title>
           </Link>
+          <button className="custom-close-button position-absolute border-0" onClick={handleCloseSidebar}>
+            <i className="fas fa-times"></i>
+          </button>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <Nav className="flex-column">
-            <Link to="/" className="text-purple">
+            <Link to="/" className="text no-underline">
               Home
             </Link>
-            <Link to="/favorites" className="text-purple">
+            <Link to="/favorites" className="text no-underline">
               Favorites
             </Link>
           </Nav>
@@ -200,23 +206,27 @@ const NavigationBar = ({ handleLocationChange }) => {
               onBlur={() => setTimeout(() => setSideShowDropdown(false), 300)}
             />
             <div
-                className={`side-dropdown-menu ${showDropdown ? "show" : ""}`}
-                style={{ width: "100%" }}
-              >
-                {locationsResults.map((loc) => {
-                  return (
-                    <a
-                      key={loc.Key}
-                      className="dropdown-item"
-                      href="#one"
-                      onClick={(e) => handleLocationChange(loc.Key, e)}
-                    >
-                      {loc.LocalizedName}
-                    </a>
-                  );
-                })}
-              </div>
+              className={`side-dropdown-menu bg-white rounded-2 border-1 overflow-hidden ${
+                sideShowDropdown ? "show" : "hide"
+              }`}
+              style={{ width: "100%" }}
+            >
+              {locationsResults.map((loc) => {
+                return (
+                  <a
+                    key={loc.Key}
+                    className="dropdown-item py-2 px-3 text-secondary text-decoration-none d-block border-bottom"
+                    href="#one"
+                    onClick={(e) => handleLocationChange(loc.Key, e)}
+                  >
+                    {loc.LocalizedName}
+                  </a>
+                );
+              })}
+            </div>
           </Form>
+          <ThemeToggle />
+          <UnitToggle />
         </Offcanvas.Body>
       </Navbar.Offcanvas>
     </>

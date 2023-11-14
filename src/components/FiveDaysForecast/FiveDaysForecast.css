@@ -1,76 +1,63 @@
-
 .five-day-component {
-    background: linear-gradient(to right, 
-        #564f8a,  /* Darker purple at the start */
-        #7f6ea8 30%, /* Transition to soft purple */
-        #a89fcd 50%, /* Lighter purple in the center */
-        #7f6ea8 70%, /* Transition back to soft purple */
-        #564f8a  /* Darker purple at the end */
+  background: linear-gradient(to right,
+      #564f8a,
+      #7f6ea8 30%,
+      #a89fcd 50%,
+      #7f6ea8 70%,
+      #564f8a
     );
-    min-height: 70vh;
+  min-height: 70vh;
+}
+
+.five-day-title {
+  width: 80%;
 }
 
 
-.forecast-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;  
-  }
-  
-  .forecast-container .card {
-    width: 200px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    background-color: var(--color-secondary);
-  }
+.forecast-container .card {
+  width: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-secondary);
+}
 
-  .forecast-container .card:hover{
-    border: 2px solid var(--color-accent);
-  }
-  
-  .forecast-container .card .card-title {
-    color: var(--color-accent);
-  }
-  
-  .card-text {
-    color: var(--color-text);
-  }
-  
-  .today-card {
-    width: 400px !important; 
-  }
+.forecast-container .card:hover {
+  border: 2px solid var(--color-accent);
+}
 
-  .equal-height-title {
-    height: 60px; /* Adjust the height as needed */
-    display: flex;
+.forecast-container .card .card-title {
+  color: var(--color-accent);
+}
+
+.card-text {
+  color: var(--color-text);
+}
+
+.today-card {
+  width: 400px !important;
+}
+
+.equal-height-title {
+  height: 60px;
+}
+
+.equal-height-icon {
+  height: 100px;
+}
+
+.equal-height-text {
+  height: 50px;
+}
+
+.vertical-line {
+  border-left: 1px solid #dee2e6;
+}
+
+
+@media (max-width: 800px) {
+  .forecast-container {
     align-items: center;
     justify-content: center;
-  }
-  
-  .equal-height-icon {
-    height: 100px; /* Adjust the height as needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .equal-height-text {
-    height: 50px; /* Adjust the height as needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
   }
 
-  .vertical-line {
-    border-left: 1px solid #dee2e6; /* Bootstrap's border color */
-    height: 100%; /* Adjust the height to match the content */
-    margin-left: 20px; /* Space from the content */
-    margin-right: 20px; /* Space from the content */
-  }
-  
-  
-  @media (max-width: 768px) {
-    .forecast-container {
-      justify-content: space-around;
-    }
-  }
+}
