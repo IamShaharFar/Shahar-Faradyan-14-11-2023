@@ -19,6 +19,14 @@ function App() {
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const weatherData = useSelector((state) => state.currentWeather);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
+  const showErrorPopup = (message) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+  };
 
   useEffect(() => {
     if (shouldAutoUpdate) {
@@ -38,10 +46,16 @@ function App() {
   }, [theme]);
 
   const checkAndFetchWeather = async () => {
-    const currentTime = new Date().getTime();
-    if (!weatherData.key || weatherData.expirationTime <= currentTime) {
-      let currentLocationKey = await getCurrentLocationKey();
-      fetchWeatherData(currentLocationKey);
+    try {
+      const currentTime = new Date().getTime();
+      if (!weatherData.key || weatherData.expirationTime <= currentTime) {
+        let currentLocationKey = await getCurrentLocationKey();
+        fetchWeatherData(currentLocationKey);
+      }
+    } catch (err) {
+      showErrorPopup(
+        "Automatic weather update failed. Please refresh the page or try again later"
+      );
     }
   };
 
@@ -69,6 +83,9 @@ function App() {
           }
         },
         (error) => {
+          showErrorPopup(
+            "We're unable to access your location. Please check your location settings or try again later."
+          );
           console.error("Error obtaining location: ", error);
           resolve("215854"); // Default location key
         }
@@ -88,6 +105,9 @@ function App() {
       const data = await response.json();
       dispatch(setCurrentWeather({ key: locationKey, data: data[0] }));
     } catch (error) {
+      showErrorPopup(
+        "Unable to fetch current weather data. Please check your network connection."
+      );
       console.error("Error fetching current weather data:", error);
     }
   };
@@ -99,20 +119,46 @@ function App() {
       const data = await response.json();
       dispatch(setFiveDayForecast({ key: locationKey, data }));
     } catch (error) {
+      showErrorPopup(
+        "Unable to fetch the five-day forecast. Please try again later."
+      );
       console.error("Error fetching five day forecast data:", error);
     }
   };
 
   const handleLocationChange = async (key) => {
-    setManualUpdate(true);
-    await dispatch(resetWeather());
-    fetchWeatherData(key);
+    try {
+      setManualUpdate(true);
+      await dispatch(resetWeather());
+      fetchWeatherData(key);
+    } catch (err) {
+      showErrorPopup(
+        "There was an issue updating the location. Please try again."
+      );
+    }
   };
 
   return (
     <Router>
       <TemperatureProvider>
         <div className="App">
+          {showPopup && (
+            <div
+              style={{
+                position: "fixed",
+                top: "0px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "red",
+                color: "white",
+                padding: "20px",
+                borderRadius: "10px",
+                zIndex: 1000,
+              }}
+            >
+              {popupMessage}
+            </div>
+          )}
           <NavigationBar handleLocationChange={handleLocationChange} />
           <Routes>
             <Route path="/" element={<Home />} />

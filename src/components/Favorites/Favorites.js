@@ -260,44 +260,57 @@ const Favorites = ({ onFavorClick }) => {
           </div>
         </div>
         <div className="d-flex w-100 justify-content-center flex-wrap">
-          {favorites.map((fav) => {
-            const favoriteData = getFavoriteWeatherData(fav.key);
-            if (!favoriteData) {
-              // Optionally, handle the case where favorite data is not available
-              return null; // or return a placeholder component/message
-            }
+          {favorites.length == 0 ? (
+            <div className="no-favorites-message">
+              You don't have any favorite locations yet.
+            </div>
+          ) : (
+            favorites.map((fav) => {
+              const favoriteData = getFavoriteWeatherData(fav.key);
+              if (!favoriteData) {
+                // Optionally, handle the case where favorite data is not available
+                return null; // or return a placeholder component/message
+              }
 
-            return (
-              <div
-                key={fav.key}
-                onClick={() => handleCardClick(fav.key)}
-                className="fav-card mb-4 ms-3 d-flex flex-column justify-content-center align-items-center rounded-4"
-              >
-                <i
-                  title={
-                    isFavorite(fav.key)
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"
-                  }
-                  className={`position-absolute fav-icon fa${
-                    isFavorite(fav.key) ? "-solid" : "-regular"
-                  } fa-bookmark fa-xl ms-2`}
-                  onClick={() => handleFavoriteClick(fav.key)}
-                ></i>
-                <h3 className="text-main text-center fav-name">{fav.name}</h3>
-                <img
-                  width={100}
-                  src={getIconUrl(favoriteData[0].WeatherIcon)}
-                  alt={fav.name}
-                />
-                <h5 className="text-main">
-                  {formatTemperature(
-                    favoriteData[0].Temperature.Imperial.Value
-                  )}
-                </h5>
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={fav.key}
+                  className="fav-card mb-4 ms-3 d-flex flex-column justify-content-center align-items-center rounded-4"
+                >
+                  <i
+                    onClick={() => handleFavoriteClick(fav.key)}
+                    title={
+                      isFavorite(fav.key)
+                        ? "Remove from Favorites"
+                        : "Add to Favorites"
+                    }
+                    className={`position-absolute fav-icon fa${
+                      isFavorite(fav.key) ? "-solid" : "-regular"
+                    } fa-bookmark fa-xl ms-2`}
+                  ></i>
+                  <div
+                    className="d-flex flex-column justify-content-center align-items-center"
+                    onClick={() => handleCardClick(fav.key)}
+                  >
+                    <h3 className="text-main text-center fav-name">
+                      {fav.name}
+                    </h3>
+                    <img
+                      width={100}
+                      src={getIconUrl(favoriteData[0].WeatherIcon)}
+                      alt={fav.name}
+                    />
+                    <h5 className="text-main">
+                      {formatTemperature(
+                        favoriteData[0].Temperature.Imperial.Value
+                      )}
+                    </h5>
+                  </div>
+                </div>
+              );
+            })
+          )}
+          {}
         </div>
       </div>
     </div>
