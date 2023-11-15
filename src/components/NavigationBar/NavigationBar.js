@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav, FormControl, Offcanvas, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useTheme } from "../../ThemeContext";
-import { useTemperature } from "../../TemperatureContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./NavigationBar.css";
 import ThemeToggle from "../Toggles/ThemeToggle";
@@ -67,7 +65,6 @@ const NavigationBar = ({ handleLocationChange }) => {
       setShowDropdown(filteredResults.length > 0);
       setSideShowDropdown(filteredResults.length > 0);
     } else {
-      // Check if the exact query already exists
       const exactMatch = weatherSearchData.some(search => 
         search.query.toLowerCase() === lowerCaseQuery
       );
@@ -133,7 +130,6 @@ const NavigationBar = ({ handleLocationChange }) => {
             <Link to="/favorites" className="nav-link d-none d-lg-block text">
               Favorites
             </Link>
-            {/* Conditionally render the search bar for large screens */}
             <Form className="d-none d-lg-flex ms-5 me-2">
               <FormControl
                 type="search"
@@ -216,7 +212,7 @@ const NavigationBar = ({ handleLocationChange }) => {
                   <a
                     key={loc.Key}
                     className="dropdown-item py-2 px-3 text-secondary text-decoration-none d-block border-bottom"
-                    href="#one"
+                    href=""
                     onClick={(e) => handleLocationChange(loc.Key, e)}
                   >
                     {loc.LocalizedName}
@@ -225,7 +221,7 @@ const NavigationBar = ({ handleLocationChange }) => {
               })}
             </div>
           </Form>
-          <ThemeToggle />
+          <ThemeToggle/>
           <UnitToggle />
         </Offcanvas.Body>
       </Navbar.Offcanvas>

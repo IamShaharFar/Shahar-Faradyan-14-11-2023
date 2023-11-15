@@ -1,17 +1,33 @@
 /* WeatherComponent.css */
+.raindrop {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: white;
+    opacity: 0.6;
+    bottom: 100%;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+    }
+}
+
 .location-date {
     position: relative;
 }
 
-.weather-container{
+.weather-container {
     width: 70vw;
 }
 
-.current-weather-container{
+.current-weather-container {
     width: 100% !important;
 }
 
-.fa-bookmark{
+.fa-bookmark {
     color: #ffc107;
     cursor: pointer;
 }
@@ -26,7 +42,7 @@
     justify-content: center;
 }
 
-.day-details{
+.day-details {
     background-color: var(--color-card-bg);
 }
 
@@ -58,7 +74,7 @@
     border-top: none;
 }
 
-.next-days-forecast{
+.next-days-forecast {
     background-color: var(--color-card-bg);
 }
 
@@ -85,9 +101,7 @@
 
 @media (min-width: 768px) {
 
-    /* Adjust the breakpoint as needed */
     .current-temp {
         border-right: 1px solid #ccc;
-        /* Adjust color as needed */
     }
 }

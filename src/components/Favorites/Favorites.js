@@ -7,9 +7,7 @@ import {
 } from "../../redux/currentFavorWeather";
 import { useTemperature } from "../../TemperatureContext";
 import { useNavigate } from "react-router-dom";
-import bannerImg from "../../assets/weather.png";
 import "./Favorites.css";
-import Banner from "../Banner/Banner";
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 
@@ -179,124 +177,128 @@ const Favorites = ({ onFavorClick }) => {
   };
 
   return (
-    <div className="ms-3 me-2">
-      {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: "0px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "red",
-            color: "white",
-            padding: "20px",
-            borderRadius: "10px",
-            zIndex: 1000,
-          }}
-        >
-          {popupMessage}
-        </div>
-      )}
-      <div className="current-weather-container w-100 m-0 mb-4 p-0 d-flex flex-column">
-        <div className="location-date d-flex flex-column align-items-start ms-4 mt-4">
-          <div className="d-flex justify-content-center align-items-center">
-            <h4 className="text-main m-0">{weatherData.location}</h4>
-            <i
-              title={
-                isFavorite(currentWeather.key)
-                  ? "Remove from Favorites"
-                  : "Add to Favorites"
-              }
-              className={`fa${
-                isFavorite(currentWeather.key) ? "-solid" : "-regular"
-              } fa-bookmark fa-lg ms-2`}
-              onClick={() => handleFavoriteClick(currentWeather.key)}
-            ></i>
+    <div className="d-flex flex-column align-items-center ms-3 me-3">
+      <div className="ms-3 me-2 favorites-container">
+        {showPopup && (
+          <div
+            style={{
+              position: "fixed",
+              top: "0px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "red",
+              color: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              zIndex: 1000,
+            }}
+          >
+            {popupMessage}
           </div>
-          <h6 className="text-secondary">{weatherData.currentDay}</h6>
-        </div>
-        <div className="current-daily-container d-flex flex-column flex-md-row justify-content-center text-center mb-4 mt-4 pe-0 pe-md-4">
-          <div className="current-temp me-0 pe-md-4 d-flex align-content-center justify-content-around col-12 col-md-6 pb-4 pb-md-0">
-            <div className="current-weather d-flex align-items-center justify-content-center">
-              <img width={180} src={weatherData.imgUrl} />
-              <div>
-                <h1 className="text-main">{weatherData.currentTemp}</h1>
-                <h3 className="text-main m-0">
-                  {weatherData.currentCondition}
-                </h3>
-                <h5 className="text-secondary">{weatherData.text}</h5>
-              </div>
-            </div>
-          </div>
-          <div className="day-details ms-0 ms-md-4 mt-4 mt-md-0 col-12 col-md-6 d-flex justify-content-center flex-column rounded-4">
-            <div className="d-flex align-items-start">
-              <h5 className="pt-3 ps-3 mb-3 text-secondary">
-                Weather Overview
-              </h5>
-            </div>
-            <div className="row mb-3">
-              <div className="col-4 d-flex flex-column">
-                <span className="text-main mb-1">{weatherData.highTemp}</span>
-                <span className="text-secondary">
-                  <i className="fa-solid fa-temperature-high fa-lg me-2"></i>
-                  High
-                </span>
-              </div>
-              <div className="col-4 d-flex flex-column">
-                <span className="text-main mb-1">{weatherData.lowTemp}</span>
-                <span className="text-secondary">
-                  <i className="fa-solid fa-temperature-low fa-lg me-2"></i>
-                  Low
-                </span>
-              </div>
-              <div className="col-4 d-flex flex-column">
-                <span className="text-main mb-1">{weatherData.severity}</span>
-                <span className="text-secondary">
-                  <i className="fa-solid fa-cloud-rain fa-lg me-2"></i>
-                  severity
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="d-flex w-100 justify-content-evenly flex-wrap">
-        {favorites.map((fav) => {
-          const favoriteData = getFavoriteWeatherData(fav.key);
-          if (!favoriteData) {
-            // Optionally, handle the case where favorite data is not available
-            return null; // or return a placeholder component/message
-          }
-
-          return (
-            <div
-              key={fav.key}
-              onClick={() => handleCardClick(fav.key)}
-              className="fav-card mb-4 d-flex flex-column justify-content-center align-items-center rounded-4"
-            >
+        )}
+        <div className="current-weather-container w-100 m-0 mb-4 p-0 d-flex flex-column">
+          <div className="location-date d-flex flex-column align-items-start ms-4 mt-4">
+            <div className="d-flex justify-content-center align-items-center">
+              <h4 className="text-main m-0">{weatherData.location}</h4>
               <i
                 title={
-                  isFavorite(fav.key)
+                  isFavorite(currentWeather.key)
                     ? "Remove from Favorites"
                     : "Add to Favorites"
                 }
-                className={`position-absolute fav-icon fa${
-                  isFavorite(fav.key) ? "-solid" : "-regular"
-                } fa-bookmark fa-xl ms-2`}
-                onClick={() => handleFavoriteClick(fav.key)}
+                className={`fa${
+                  isFavorite(currentWeather.key) ? "-solid" : "-regular"
+                } fa-bookmark fa-lg ms-2`}
+                onClick={() => handleFavoriteClick(currentWeather.key)}
               ></i>
-              <h3 className="text-main text-center fav-name">{fav.name}</h3>
-              <img
-                width={100}
-                src={getIconUrl(favoriteData[0].WeatherIcon)}
-                alt={fav.name}
-              />
-              <h5 className="text-main">
-                {formatTemperature(favoriteData[0].Temperature.Imperial.Value)}
-              </h5>
             </div>
-          );
-        })}
+            <h6 className="text-secondary">{weatherData.currentDay}</h6>
+          </div>
+          <div className="current-daily-container d-flex flex-column flex-md-row justify-content-center text-center mb-4 mt-4 pe-0 pe-md-4">
+            <div className="current-temp me-0 pe-md-4 d-flex align-content-center justify-content-around col-12 col-md-6 pb-4 pb-md-0">
+              <div className="current-weather d-flex align-items-center justify-content-center">
+                <img width={180} src={weatherData.imgUrl} />
+                <div>
+                  <h1 className="text-main">{weatherData.currentTemp}</h1>
+                  <h3 className="text-main m-0">
+                    {weatherData.currentCondition}
+                  </h3>
+                  <h5 className="text-secondary">{weatherData.text}</h5>
+                </div>
+              </div>
+            </div>
+            <div className="day-details ms-0 ms-md-4 mt-4 mt-md-0 col-12 col-md-6 d-flex justify-content-center flex-column rounded-4">
+              <div className="d-flex align-items-start">
+                <h5 className="pt-3 ps-3 mb-3 text-secondary">
+                  Weather Overview
+                </h5>
+              </div>
+              <div className="row mb-3">
+                <div className="col-4 d-flex flex-column">
+                  <span className="text-main mb-1">{weatherData.highTemp}</span>
+                  <span className="text-secondary">
+                    <i className="fa-solid fa-temperature-high fa-lg me-2"></i>
+                    High
+                  </span>
+                </div>
+                <div className="col-4 d-flex flex-column">
+                  <span className="text-main mb-1">{weatherData.lowTemp}</span>
+                  <span className="text-secondary">
+                    <i className="fa-solid fa-temperature-low fa-lg me-2"></i>
+                    Low
+                  </span>
+                </div>
+                <div className="col-4 d-flex flex-column">
+                  <span className="text-main mb-1">{weatherData.severity}</span>
+                  <span className="text-secondary">
+                    <i className="fa-solid fa-cloud-rain fa-lg me-2"></i>
+                    severity
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="d-flex w-100 justify-content-center flex-wrap">
+          {favorites.map((fav) => {
+            const favoriteData = getFavoriteWeatherData(fav.key);
+            if (!favoriteData) {
+              // Optionally, handle the case where favorite data is not available
+              return null; // or return a placeholder component/message
+            }
+
+            return (
+              <div
+                key={fav.key}
+                onClick={() => handleCardClick(fav.key)}
+                className="fav-card mb-4 ms-3 d-flex flex-column justify-content-center align-items-center rounded-4"
+              >
+                <i
+                  title={
+                    isFavorite(fav.key)
+                      ? "Remove from Favorites"
+                      : "Add to Favorites"
+                  }
+                  className={`position-absolute fav-icon fa${
+                    isFavorite(fav.key) ? "-solid" : "-regular"
+                  } fa-bookmark fa-xl ms-2`}
+                  onClick={() => handleFavoriteClick(fav.key)}
+                ></i>
+                <h3 className="text-main text-center fav-name">{fav.name}</h3>
+                <img
+                  width={100}
+                  src={getIconUrl(favoriteData[0].WeatherIcon)}
+                  alt={fav.name}
+                />
+                <h5 className="text-main">
+                  {formatTemperature(
+                    favoriteData[0].Temperature.Imperial.Value
+                  )}
+                </h5>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -4,11 +4,7 @@
 
 :root {
   /* Light Theme */
-  --color-primary: #7f6ea8;
-  --color-secondary: #a89fcd;
-  --color-accent: #ffd700;
-  --color-background: #f2f2f2;
-  --color-text: #333333;
+  --color-accent: #ffc107; 
   --color-bg: #dcdcdc;
   --color-card-bg: #d2d4d7;
   --color-text-main: #222b3a;
@@ -17,11 +13,7 @@
 
 [data-theme="dark"] {
   /* Dark Theme */
-  --color-primary: #564f8a; 
-  --color-secondary: #807da3; 
   --color-accent: #ffc107; 
-  --color-background: #403761; 
-  --color-text: #f2f2f2; 
   --color-bg: #0d131d;
   --color-card-bg: #222b3a;
   --color-text-main: #d5d7da;

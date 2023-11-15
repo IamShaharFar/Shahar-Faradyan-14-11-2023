@@ -56,8 +56,42 @@ const CurrentWeather = () => {
     dispatch(action({ key: currentWeather.key, name: weatherData.location }));
   };
 
+  const createRaindropStyle = () => {
+    return {
+      left: `${Math.random() * 100}vw`,
+      animationDuration: `${Math.random() * 2 + 0.5}s`,
+    };
+  };
+
   if (!currentWeather.key) {
-    return <div></div>;
+    return (
+      <div className="loading-container">
+        <div className="rain">
+          {[...Array(100)].map((_, index) => (
+            <div
+              key={index}
+              className="raindrop"
+              style={createRaindropStyle()}
+            ></div>
+          ))}
+        </div>
+        <div
+          className="d-flex flex-column justify-content-center align-items-center"
+          style={{ height: "100vh", position: "relative", zIndex: 1 }}
+        >
+          <div
+            className="spinner-border text-light"
+            style={{ width: "4rem", height: "4rem" }}
+            role="status"
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="text-light mt-3">
+            Gathering the latest weather data...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // Data Preparation
@@ -146,13 +180,13 @@ const CurrentWeather = () => {
               </div>
             </div>
             {/* Day Details */}
-            <div className="day-details ms-0 ms-md-4 mt-4 mt-md-0 col-12 col-md-6 d-flex justify-content-center flex-column rounded-4">
+            <div className="day-details ms-0 ms-md-4 mt-4 mt-md-0 col-12 col-md-6 d-flex justify-content-evenly flex-column rounded-4">
               <div className="d-flex align-items-start">
-                <h5 className="pt-3 ps-3 mb-3 text-secondary">
+                <h5 className="pt-0 ps-3 mb-3 text-secondary">
                   Weather Overview
                 </h5>
               </div>
-              <div className="row mb-3">
+              <div className="row">
                 <div className="col-4 d-flex flex-column">
                   <span className="text-main mb-1">{weatherData.highTemp}</span>
                   <span className="text-secondary">
@@ -180,7 +214,9 @@ const CurrentWeather = () => {
         </div>
         {/* 5-Day Forecast */}
         <div className="next-days-forecast rounded-4 mb-4 w-100">
-          <h5 className="text-secondary pt-3 ps-3 mb-3">5-Day Forecast</h5>
+          <div className="d-flex align-items-start">
+            <h5 className="text-secondary pt-3 ps-3 mb-3">5-Day Forecast</h5>
+          </div>
           {weatherData.nextDaysForecast.map((day, index) => (
             <div key={index} className="row">
               <div className="col">

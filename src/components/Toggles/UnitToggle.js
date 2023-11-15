@@ -6,7 +6,7 @@ const UnitToggle = () => {
 
   return (
     <div className="mt-2 d-flex flex-row justify-content-start align-items-center">
-      <span className="text ms-lg-5 me-lg-3 me-sm-2 ms-sm-1">Fahrenheit</span>
+      <span className="text ms-xs-0 ms-sm-0 ms-md-0 ms-lg-0 ms-xl-4 me-3">Fahrenheit</span>
       <label className="unit-switcher d-block d-lg-block me-3">
         <input
           type="checkbox"

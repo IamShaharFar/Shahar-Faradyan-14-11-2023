@@ -12,79 +12,77 @@ import NavigationBar from "./components/NavigationBar/NavigationBar";
 import Home from "./components/Home";
 import Favorites from "./components/Favorites/Favorites";
 import "./App.css";
-import CurrentWeather from "./components/CurrentWeather/CurrentWeather";
 
 function App() {
   const [manualUpdate, setManualUpdate] = useState(false);
+  const [shouldAutoUpdate, setShouldAutoUpdate] = useState(true);
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const weatherData = useSelector((state) => state.currentWeather);
-  const geopositionUrlApi = process.env.REACT_APP_GEOPOSITION_URL;
-  const currentWeatherApiUrl = process.env.REACT_APP_CURRENT_CONDITIONS_URL;
-  const fiveDayForecastApiUrl = process.env.REACT_APP_FIVE_DAYS_FORECAST_URL;
-  const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 
   useEffect(() => {
-    async function checkAndFetchWeather() {
-      const currentTime = new Date().getTime();
-      if (!weatherData.key || weatherData.expirationTime <= currentTime) {
-        let currentLocationKey = await getCurrentLocationKey();
-        fetchCurrentData(currentLocationKey);
-        fetchFiveDayForecast(currentLocationKey);
-      }
-    }
-    if (!manualUpdate) {
+    if (shouldAutoUpdate) {
       checkAndFetchWeather();
     }
-    else{
+  }, [shouldAutoUpdate]);
+
+  useEffect(() => {
+    if (manualUpdate) {
       setManualUpdate(false);
+      setShouldAutoUpdate(false);
     }
-  }, [weatherData]);
+  }, [manualUpdate]);
 
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
   }, [theme]);
 
-  async function getCurrentLocationKey() {
+  const checkAndFetchWeather = async () => {
     const currentTime = new Date().getTime();
+    if (!weatherData.key || weatherData.expirationTime <= currentTime) {
+      let currentLocationKey = await getCurrentLocationKey();
+      fetchWeatherData(currentLocationKey);
+    }
+  };
 
-    if (
-      weatherData &&
-      weatherData.key &&
-      weatherData.expirationTime > currentTime
-    ) {
+  const getCurrentLocationKey = async () => {
+    const currentTime = new Date().getTime();
+    if (weatherData.key && weatherData.expirationTime > currentTime) {
       return weatherData.key;
     }
+    return await fetchLocationKey();
+  };
 
+  const fetchLocationKey = () => {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           try {
             const { latitude, longitude } = position.coords;
-            const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-            const url = `${geopositionUrlApi}?apikey=${apiKey}&q=${latitude},${longitude}`;
+            const url = `${process.env.REACT_APP_GEOPOSITION_URL}?apikey=${process.env.REACT_APP_WEATHER_API_KEY}&q=${latitude},${longitude}`;
             const response = await fetch(url);
             const data = await response.json();
             resolve(data.Key);
           } catch (error) {
-            console.error(
-              "Error occurred while fetching location key: ",
-              error
-            );
-            resolve("215854");
+            console.error("Error fetching location key: ", error);
+            resolve("215854"); // Default location key
           }
         },
         (error) => {
           console.error("Error obtaining location: ", error);
-          resolve("215854");
+          resolve("215854"); // Default location key
         }
       );
     });
-  }
+  };
 
-  async function fetchCurrentData(locationKey) {
-    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-    const url = `${currentWeatherApiUrl}${locationKey}?apikey=${apiKey}`;
+  const fetchWeatherData = async (locationKey) => {
+    await fetchCurrentData(locationKey);
+    await fetchFiveDayForecast(locationKey);
+  };
+
+  const fetchCurrentData = async (locationKey) => {
+    const url = `${process.env.REACT_APP_CURRENT_CONDITIONS_URL}${locationKey}?apikey=${process.env.REACT_APP_WEATHER_API_KEY}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -92,10 +90,10 @@ function App() {
     } catch (error) {
       console.error("Error fetching current weather data:", error);
     }
-  }
+  };
 
-  async function fetchFiveDayForecast(locationKey) {
-    const url = `${fiveDayForecastApiUrl}${locationKey}?apikey=${apiKey}&metric=true`; // Assuming you want metric units
+  const fetchFiveDayForecast = async (locationKey) => {
+    const url = `${process.env.REACT_APP_FIVE_DAYS_FORECAST_URL}${locationKey}?apikey=${process.env.REACT_APP_WEATHER_API_KEY}&metric=true`;
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -103,14 +101,13 @@ function App() {
     } catch (error) {
       console.error("Error fetching five day forecast data:", error);
     }
-  }
+  };
 
-  async function handleLocationChange(key) {
-    console.log(key);
+  const handleLocationChange = async (key) => {
     setManualUpdate(true);
     await dispatch(resetWeather());
-    fetchCurrentData(key);
-  }
+    fetchWeatherData(key);
+  };
 
   return (
     <Router>
@@ -121,9 +118,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route
               path="/favorites"
-              element={
-                <Favorites onFavorClick={(key) => handleLocationChange(key)} />
-              }
+              element={<Favorites onFavorClick={handleLocationChange} />}
             />
           </Routes>
         </div>
